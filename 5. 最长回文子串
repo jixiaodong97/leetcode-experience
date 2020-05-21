@@ -10,13 +10,14 @@
 输入: "cbbd"
 输出: "bb"
 
-//动态规划算法
-        /*
-        因为O(n2),所以每一次判断s[i...j]是否是回文串必须只计算O(1)次,不可能每次都对子串调用判断回文函数.
-        当循环运行到s[i...j]但无法判断时,需要从之前的循环中已经判断成功的结果中找信息,
-        且知道s[i...j-1]无法O(1)次判断s[i...j],而是需要知道s[i+1...j-1]是回文就能O(1)次算出.
-        长度为k的回文串是通过长度为k-2的回文串得出的
-        */
+
+/*
+动态规划算法
+因为O(n2),所以每一次判断s[i...j]是否是回文串必须只计算O(1)次,不可能每次都对子串调用判断回文函数.
+当循环运行到s[i...j]但无法判断时,需要从之前的循环中已经判断成功的结果中找信息,
+且知道s[i...j-1]无法O(1)次判断s[i...j],而是需要知道s[i+1...j-1]是回文就能O(1)次算出.
+长度为k的回文串是通过长度为k-2的回文串得出的
+*/
 class Solution {
 public:
     string longestPalindrome(string s) {
@@ -41,6 +42,50 @@ public:
                 if(dp[i+1][i+length-2]==1 && s[i]==s[i+length-1]) {
                     dp[i][i+length-1]=1;
                     if(length>ans.size()) ans=s.substr(i,length);
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+
+/*
+中心扩展法
+以单个字符为中心、以2个字符为中心
+*/
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n=s.size();
+        int i;
+        string ans;
+        if(!n) return ans;
+        ans=s.substr(0,1); //先令ans为第一个字符，s[0]本身一定是回文串
+        int left,right;
+        //以单个字符为中心
+        for(i=0;i<n;i++){
+            left=i;right=i;
+            while(left-1>=0 && right+1<=n-1){
+                left--;right++;
+                if(s[left]!=s[right]) {
+                    break;
+                }else{
+                    if(right-left+1>ans.size()) ans=s.substr(left,right-left+1);
+                }
+            }
+        }
+        //以2个字符为中心
+        for(i=0;i<n-1;i++){
+            left=i;right=i+1;
+            if(s[left]!=s[right]) continue;
+            if(2>ans.size()) ans=s.substr(left,right-left+1);
+            while(left-1>=0 && right+1<=n-1){
+                left--;right++;
+                if(s[left]!=s[right]) {
+                    break;
+                }else{
+                    if(right-left+1>ans.size()) ans=s.substr(left,right-left+1);
                 }
             }
         }
